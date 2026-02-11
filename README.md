@@ -1,0 +1,1 @@
+This project is about using PyGame to recreate a version of Mancala that takes user inputs to choose which pocket to play from, follows the rules of the board game (player only plays from their side, extra turn if the last stone lands in your "home", etc), and potentially a simple computer opponent.
