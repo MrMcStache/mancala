@@ -2,6 +2,7 @@ import pygame
 import os
 from constants import *
 from board import *
+from stone import *
 
 def main():
     pygame.init()
@@ -13,8 +14,8 @@ def main():
 
     Board.containers = (updatable, drawable)
     Pocket.containers = (updatable, drawable, pockets)
-    Home.containers = (updatable, drawable, pockets)
-    #Stone.containers = (updatable, drawable, stones)
+    Home.containers = (updatable, drawable)
+    Stone.containers = (updatable, drawable, stones)
 
     screen = pygame.display.set_mode((MAX_WIDTH, MAX_HEIGHT))
     clock = pygame.time.Clock()
@@ -22,6 +23,7 @@ def main():
 
     board = Board()
     initialize_pockets()
+    initialize_stones(screen, pockets)
 
     while True:
         for event in pygame.event.get():
@@ -36,7 +38,6 @@ def main():
         pygame.display.flip()
 
         dt = clock.tick(60) / 1000
-
 
 if __name__ == "__main__":
     main()
