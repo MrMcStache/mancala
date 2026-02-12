@@ -4,6 +4,13 @@ from constants import *
 from board import *
 from stone import *
 
+def check_stones(pockets):
+    n = 0
+
+    for pocket in pockets:
+        print(f"Pocket {n}: {pocket.get_stones()} stones")
+        n += 1
+
 def main():
     pygame.init()
 
@@ -14,7 +21,6 @@ def main():
 
     Board.containers = (updatable, drawable)
     Pocket.containers = (updatable, drawable, pockets)
-    Home.containers = (updatable, drawable)
     Stone.containers = (updatable, drawable, stones)
 
     screen = pygame.display.set_mode((MAX_WIDTH, MAX_HEIGHT))
@@ -24,6 +30,8 @@ def main():
     board = Board()
     initialize_pockets()
     initialize_stones(screen, pockets)
+
+    #check_stones(pockets)
 
     while True:
         for event in pygame.event.get():

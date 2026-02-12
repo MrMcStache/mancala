@@ -5,11 +5,12 @@ from constants import *
 
 def initialize_stones(screen, pockets):
     for pocket in pockets:
-        for i in range(0, 6):
-            x = pocket.x + ((POCKET_WIDTH / 2) + random.randrange(-30, 30))
-            y = pocket.y + ((POCKET_WIDTH / 2) + random.randrange(-30, 30))
+        if not pocket.is_home:
+            for i in range(0, 6):
+                x = pocket.x + ((POCKET_WIDTH / 2) + random.randrange(-30, 30))
+                y = pocket.y + ((POCKET_WIDTH / 2) + random.randrange(-30, 30))
 
-            stone = Stone(x, y)
+                pocket.stones.append(Stone(x, y))
 
 class Stone(pygame.sprite.Sprite):
     def __init__(self, x, y):
