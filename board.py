@@ -2,7 +2,6 @@ import pygame
 import os
 import random
 from constants import *
-#from move_stones import *
 
 def initialize_pockets():
     px = BOARD_X + 170
@@ -36,7 +35,6 @@ class Board(pygame.sprite.Sprite):
 
         pygame.draw.rect(screen, BOARD_C, board, border_radius = BORDER_RADIUS)
         self.outline.draw(screen)
-        #pygame.draw.rect(screen, BOARD_OL_C, board, width = 10, border_radius = BORDER_RADIUS)
 
     def check_pockets(self, pockets):
         n = 0
@@ -52,28 +50,29 @@ class Board(pygame.sprite.Sprite):
         while pocket.stones:
             stone = pocket.stones[0]
             next_p = pockets[(index + n) % 14]
-            #print(f"index + n % 14: {(index + n) % 14}")
 
-            '''
             if next_p.is_home:
                 if player and next_p.player:
                     stone.x = next_p.x + ((POCKET_WIDTH / 2) + random.randrange(-STONE_RANDOM, STONE_RANDOM))
-                    stone.y = next_p.y + ((HOME_HEIGHT / 2) + random.randrange(-300, 300))
+                    stone.y = next_p.y + ((HOME_HEIGHT / 2) + random.randrange(-125, 125))
 
                     next_p.stones.append(stone)
-                    pocket.stones.pop(n - 1)
+                    pocket.stones.pop(0)
 
                     #player_score += 1
+                    self.remaining_stones -= 1
 
                     n += 1
+
                 elif not player and not next_p.player:
                     stone.x = next_p.x + ((POCKET_WIDTH / 2) + random.randrange(-STONE_RANDOM, STONE_RANDOM))
-                    stone.y = next_p.y + ((HOME_HEIGHT / 2) + random.randrange(-300, 300))
+                    stone.y = next_p.y + ((HOME_HEIGHT / 2) + random.randrange(-125, 125))
 
                     next_p.stones.append(stone)
-                    pocket.stones.pop(n - 1)
+                    pocket.stones.pop(0)
 
                     #cpu_score += 1
+                    self.remaining_stones -= 1
 
                     n += 1
                 else:
@@ -84,47 +83,17 @@ class Board(pygame.sprite.Sprite):
                     stone.y = next_p.y + ((POCKET_WIDTH / 2) + random.randrange(-STONE_RANDOM, STONE_RANDOM))
 
                     next_p.stones.append(stone)
-                    pocket.stones.pop(n - 2)
+                    pocket.stones.pop(0)
 
                     n += 1
-            '''
+            else:
+                stone.x = next_p.x + ((POCKET_WIDTH / 2) + random.randrange(-STONE_RANDOM, STONE_RANDOM))
+                stone.y = next_p.y + ((POCKET_WIDTH / 2) + random.randrange(-STONE_RANDOM, STONE_RANDOM))
 
-            #print(f"({stone.x}, {stone.y}) moving to ({next_p.x + ((POCKET_WIDTH / 2) + random.randrange(-STONE_RANDOM, STONE_RANDOM))}, {next_p.y + ((POCKET_WIDTH / 2) + random.randrange(-STONE_RANDOM, STONE_RANDOM))})")
-            stone.x = next_p.x + ((POCKET_WIDTH / 2) + random.randrange(-STONE_RANDOM, STONE_RANDOM))
-            stone.y = next_p.y + ((POCKET_WIDTH / 2) + random.randrange(-STONE_RANDOM, STONE_RANDOM))
+                next_p.stones.append(stone)
+                pocket.stones.pop(0)
 
-            next_p.stones.append(stone)
-            #print(f"n = {n}")
-            #print(f"Pocket stones before: {pocket.stones}")
-            pocket.stones.pop(0)
-            #print(f"Pocket stones after: {pocket.stones}")
-
-            n += 1
-
-        '''while True: #Delete this while statment. It's just to make a collapsible group for below
-            key = pygame.key.get_pressed()
-
-            if key[pygame.K_1]:
-                print("Key 1 pressed")
-                move_stones(screen, 0, pockets, player)
-            elif key[pygame.K_2]:
-                print("Key 2 pressed")
-                move_stones(screen, 1, pockets, player)
-            elif key[pygame.K_3]:
-                print("Key 3 pressed")
-                move_stones(screen, 2, pockets, player)
-            elif key[pygame.K_4]:
-                print("Key 4 pressed")
-                move_stones(screen, 3, pockets, player)
-            elif key[pygame.K_5]:
-                print("Key 5 pressed")
-                move_stones(screen, 4, pockets, player)
-            elif key[pygame.K_6]:
-                print("Key 6 pressed")
-                move_stones(screen, 5, pockets, player)
-            elif key[pygame.K_SPACE]:
-                print("Space Key pressed")
-                check_pockets(pockets)'''
+                n += 1
 
 class Pocket(pygame.sprite.Sprite):
     def __init__(self, x, y, index, is_home=False):
@@ -175,22 +144,3 @@ class OutlineRect(pygame.sprite.Sprite):
 
     def update(self):
         pass
-
-'''class Home(pygame.sprite.Sprite):
-    def __init__(self, x, y):
-        if hasattr(self, "containers"):
-            super().__init__(self.containers)
-        else:
-            super().__init__()
-
-        self.x = x
-        self.y = y
-        self.size = (POCKET_WIDTH, HOME_HEIGHT)
-        self.outline = OutlineRect(self.x, self.y, self.size, POCKET_OL_C)
-
-    def draw(self, screen):
-        pygame.draw.rect(screen, POCKET_C, pygame.Rect((self.x, self.y), self.size), border_radius = BORDER_RADIUS)
-        self.outline.draw(screen)
-
-    def update(self):
-        pass'''

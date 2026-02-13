@@ -42,6 +42,3 @@ class OutlineCirc(pygame.sprite.Sprite):
 
     def draw(self, screen, x, y):
         pygame.draw.circle(screen, STONE_OL_C, (x, y), STONE_RADIUS, width=3)
-
-    def update(self):
-        pass
