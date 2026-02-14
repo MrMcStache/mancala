@@ -26,13 +26,13 @@ def main():
     while game:
         screen.fill(BG_C)
 
+        if not controller.update(screen, pocket_ind):
+            game = False
+
         for drawing in drawable:
             drawing.draw(screen)
 
         controller.draw(screen, pockets)
-
-        if not controller.update(screen, pocket_ind):
-            game = False
 
         pygame.display.flip()
 

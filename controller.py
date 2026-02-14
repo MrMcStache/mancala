@@ -28,13 +28,10 @@ class Controller(pygame.sprite.Sprite):
                 px = BOARD_X + 1130
                 if (p + 1) % 7 == 0:
                     home = Pocket(px - (160 * (p - 6)), py - 200, p, True)
-                    #print(f"Home {p}: ({home.x},{home.y})")
                 else:
                     pocket = Pocket(px - (160 * (p - 6)), py - 200, p)
-                    #print(f"Pocket {p}: ({pocket.x},{pocket.y})")
             else:
                 pocket = Pocket(px + (160 * p), py, p)
-                #print(f"Pocket {p}: ({pocket.x},{pocket.y})")
 
         pocket_ind = []
 
@@ -49,6 +46,55 @@ class Controller(pygame.sprite.Sprite):
             pocket_ind.append(pocket)
 
         return pocket_ind
+
+    def check_pockets(self, pockets):
+        n = 0
+
+        for pocket in pockets:
+            print(f"Pocket {n}: {pocket.get_stones()} stones")
+            n += 1
+
+    def change_player(self):
+        if self.player:
+            self.player = 0
+        else:
+            self.player = 1
+
+    def move(self, stone, pocket, next_p):
+        stone.x = next_p.x + ((POCKET_WIDTH / 2) + random.randrange(-STONE_RANDOM, STONE_RANDOM))
+        stone.y = next_p.y + ((POCKET_WIDTH / 2) + random.randrange(-STONE_RANDOM, STONE_RANDOM))
+
+        next_p.stones.append(stone)
+        pocket.stones.remove(stone)
+
+    def move_to_home(self, stone, pockets, next_p, player):
+        if self.player:
+            home = pockets[6]
+            stone.x = home.x + ((POCKET_WIDTH / 2) + random.randrange(-STONE_RANDOM, STONE_RANDOM))
+            stone.y = home.y + ((HOME_HEIGHT / 2) + random.randrange(-125, 125))
+        else:
+            home = pockets[13]
+            stone.x = home.x + ((POCKET_WIDTH / 2) + random.randrange(-STONE_RANDOM, STONE_RANDOM))
+            stone.y = home.y + ((HOME_HEIGHT / 2) + random.randrange(-125, 125))
+
+        home.stones.append(stone)
+        next_p.stones.remove(stone)
+
+    def is_last_stone(self, pocket):
+        if len(pocket.stones) == 1:
+            return True
+        else:
+            return False
+
+    def take_opposite(self, pocket, next_p, pockets, player):
+        if player:
+            opposite = pockets[next_p.p_index + (12 - (2 * next_p.p_index))]
+        elif not player:
+            opposite = pockets[next_p.p_index - (12 + (2 * (next_p.p_index - 12)))]
+
+        while opposite.stones:
+            for stone in opposite.stones:
+                self.move_to_home(stone, pockets, opposite, player)
 
     def draw(self, screen, pockets):
         if self.player:
@@ -83,71 +129,59 @@ class Controller(pygame.sprite.Sprite):
             elif event.type == pygame.KEYDOWN:
                 if self.player:
                     if event.key == pygame.K_1:
-                        #print("Key 1 pressed")
                         if pocket_ind[0].stones:
                             self.move_stones(screen, 0, pocket_ind)
                             self.change_player()
                     elif event.key == pygame.K_2:
-                        #print("Key 2 pressed")
                         if pocket_ind[1].stones:
                             self.move_stones(screen, 1, pocket_ind)
                             self.change_player()
                     elif event.key == pygame.K_3:
-                        #print("Key 3 pressed")
                         if pocket_ind[2].stones:
                             self.move_stones(screen, 2, pocket_ind)
                             self.change_player()
                     elif event.key == pygame.K_4:
-                        #print("Key 4 pressed")
                         if pocket_ind[3].stones:
                             self.move_stones(screen, 3, pocket_ind)
                             self.change_player()
                     elif event.key == pygame.K_5:
-                        #print("Key 5 pressed")
                         if pocket_ind[4].stones:
                             self.move_stones(screen, 4, pocket_ind)
                             self.change_player()
                     elif event.key == pygame.K_6:
-                        #print("Key 6 pressed")
                         if pocket_ind[5].stones:
                             self.move_stones(screen, 5, pocket_ind)
                             self.change_player()
 
                 if not self.player:
                     if event.key == pygame.K_7:
-                        #print("Key 7 pressed")
                         if pocket_ind[7].stones:
                             self.move_stones(screen, 7, pocket_ind)
                             self.change_player()
                     elif event.key == pygame.K_8:
-                        #print("Key 8 pressed")
                         if pocket_ind[8].stones:
                             self.move_stones(screen, 8, pocket_ind)
                             self.change_player()
                     elif event.key == pygame.K_9:
-                        #print("Key 9 pressed")
                         if pocket_ind[9].stones:
                             self.move_stones(screen, 9, pocket_ind)
                             self.change_player()
                     elif event.key == pygame.K_0:
-                        #print("Key 0 pressed")
                         if pocket_ind[10].stones:
                             self.move_stones(screen, 10, pocket_ind)
                             self.change_player()
                     elif event.key == pygame.K_MINUS:
-                        #print("Key Minus pressed")
                         if pocket_ind[11].stones:
                             self.move_stones(screen, 11, pocket_ind)
                             self.change_player()
                     elif event.key == pygame.K_EQUALS:
-                        #print("Key Equals pressed")
                         if pocket_ind[12].stones:
                             self.move_stones(screen, 12, pocket_ind)
                             self.change_player()
         return True
 
-
     def move_stones(self, screen, index, pockets):
+        extra_turn = False
         pocket = pockets[index]
         n = 1
 
@@ -160,20 +194,25 @@ class Controller(pygame.sprite.Sprite):
                     stone.x = next_p.x + ((POCKET_WIDTH / 2) + random.randrange(-STONE_RANDOM, STONE_RANDOM))
                     stone.y = next_p.y + ((HOME_HEIGHT / 2) + random.randrange(-125, 125))
 
+                    if self.is_last_stone(pocket):
+                        extra_turn = True
+
                     next_p.stones.append(stone)
-                    pocket.stones.pop(0)
+                    pocket.stones.remove(stone)
 
                     self.player_score += 1
                     self.remaining_stones -= 1
 
                     n += 1
-
                 elif not self.player and not next_p.player:
                     stone.x = next_p.x + ((POCKET_WIDTH / 2) + random.randrange(-STONE_RANDOM, STONE_RANDOM))
                     stone.y = next_p.y + ((HOME_HEIGHT / 2) + random.randrange(-125, 125))
 
+                    if self.is_last_stone(pocket):
+                        extra_turn = True
+
                     next_p.stones.append(stone)
-                    pocket.stones.pop(0)
+                    pocket.stones.remove(stone)
 
                     self.cpu_score += 1
                     self.remaining_stones -= 1
@@ -183,31 +222,40 @@ class Controller(pygame.sprite.Sprite):
                     n += 1
                     next_p = pockets[(index + n) % 14]
 
-                    stone.x = next_p.x + ((POCKET_WIDTH / 2) + random.randrange(-STONE_RANDOM, STONE_RANDOM))
-                    stone.y = next_p.y + ((POCKET_WIDTH / 2) + random.randrange(-STONE_RANDOM, STONE_RANDOM))
+                    if (self.is_last_stone(pocket) and not next_p.stones):
+                        self.move(stone, pocket, next_p)
 
-                    next_p.stones.append(stone)
-                    pocket.stones.pop(0)
+                        if (self.player and next_p.p_index in range(0, 6)) or (not self.player and next_p.p_index in range(7, 13)):
+                            self.take_opposite(pocket, next_p, pockets, self.player)
+
+                            self.move_to_home(stone, pockets, next_p, self.player)
+
+                    else:
+                        self.move(stone, pocket, next_p)
+
+                        n += 1
+            else:
+                if (self.is_last_stone(pocket) and not next_p.stones):
+                    self.move(stone, pocket, next_p)
+
+                    if (self.player and next_p.p_index in range(0, 6)) or (not self.player and next_p.p_index in range(7, 13)):
+                        self.take_opposite(pocket, next_p, pockets, self.player)
+
+                        if self.player:
+                            home = pockets[6]
+                            stone.x = home.x + ((POCKET_WIDTH / 2) + random.randrange(-STONE_RANDOM, STONE_RANDOM))
+                            stone.y = home.y + ((HOME_HEIGHT / 2) + random.randrange(-125, 125))
+                        else:
+                            home = pockets[13]
+                            stone.x = home.x + ((POCKET_WIDTH / 2) + random.randrange(-STONE_RANDOM, STONE_RANDOM))
+                            stone.y = home.y + ((HOME_HEIGHT / 2) + random.randrange(-125, 125))
+
+                        home.stones.append(stone)
+                        next_p.stones.remove(stone)
+                else:
+                    self.move(stone, pocket, next_p)
 
                     n += 1
-            else:
-                stone.x = next_p.x + ((POCKET_WIDTH / 2) + random.randrange(-STONE_RANDOM, STONE_RANDOM))
-                stone.y = next_p.y + ((POCKET_WIDTH / 2) + random.randrange(-STONE_RANDOM, STONE_RANDOM))
 
-                next_p.stones.append(stone)
-                pocket.stones.pop(0)
-
-                n += 1
-
-    def check_pockets(self, pockets):
-        n = 0
-
-        for pocket in pockets:
-            print(f"Pocket {n}: {pocket.get_stones()} stones")
-            n += 1
-
-    def change_player(self):
-        if self.player:
-            self.player = 0
-        else:
-            self.player = 1
+        if extra_turn:
+            self.change_player()
