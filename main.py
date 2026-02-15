@@ -32,7 +32,7 @@ def main():
         for drawing in drawable:
             drawing.draw(screen)
 
-        controller.draw(screen, pockets)
+        controller.draw(screen, pocket_ind)
 
         pygame.display.flip()
 

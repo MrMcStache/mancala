@@ -13,6 +13,7 @@ class Controller(pygame.sprite.Sprite):
 
         self.font = pygame.font.SysFont(None, 100)
         self.player = 1
+        self.game_over = False
 
     def initialize_board(self, screen, pockets):
         board = Board()
@@ -131,15 +132,31 @@ class Controller(pygame.sprite.Sprite):
         return True
 
     def draw(self, screen, pockets):
-        if self.player:
-            p = self.player
-        else:
-            p = 2
+        if self.game_over:
+            player_score = len(pockets[6].stones)
+            cpu_score = len(pockets[13].stones)
 
-        cur_player = pygame.font.Font.render(self.font, f"Player {p}'s turn", 1, TEXT_C)
-        cur_player_rect = cur_player.get_rect()
-        cur_player_rect.center = (MAX_WIDTH / 2, MAX_HEIGHT / 6)
-        screen.blit(cur_player, cur_player_rect)
+            if player_score > cpu_score:
+                result_text = f"Player Wins! | Player: {player_score} | CPU: {cpu_score} |"
+            elif player_score < cpu_score:
+                result_text = f"CPU Wins! | CPU: {cpu_score} | Player: {player_score} |"
+            elif player_score == cpu_score:
+                result_text = f"Tie Game! | Player: {player_score} | CPU: {cpu_score} |"
+
+            results = pygame.font.Font.render(self.font, result_text, 1, TEXT_C)
+            results_rect = results.get_rect()
+            results_rect.center = (MAX_WIDTH / 2, MAX_HEIGHT / 6)
+            screen.blit(results, results_rect)
+        else:
+            if self.player:
+                p = self.player
+            else:
+                p = 2
+
+            cur_player = pygame.font.Font.render(self.font, f"Player {p}'s turn", 1, TEXT_C)
+            cur_player_rect = cur_player.get_rect()
+            cur_player_rect.center = (MAX_WIDTH / 2, MAX_HEIGHT / 6)
+            screen.blit(cur_player, cur_player_rect)
 
         for pocket in pockets:
             x = pocket.x + (POCKET_WIDTH / 2)
@@ -159,17 +176,7 @@ class Controller(pygame.sprite.Sprite):
     def update(self, screen, pocket_ind):
         for event in pygame.event.get():
             if self.check_empty_sides(pocket_ind):
-                player_score = len(pocket_ind[6].stones)
-                cpu_score = len(pocket_ind[13].stones)
-
-                if player_score > cpu_score:
-                    print(f"Game Over: Player Wins! | Player: {player_score} | CPU: {cpu_score} |")
-                elif player_score < cpu_score:
-                    print(f"Game Over: CPU Wins! | CPU: {cpu_score} | Player: {player_score} |")
-                elif player_score == cpu_score:
-                    print(f"Game Over: Tie Game! | Player: {player_score} = CPU: {cpu_score} |")
-
-                return False
+                self.game_over = True
 
             if event.type == pygame.QUIT:
                 return False
@@ -202,29 +209,32 @@ class Controller(pygame.sprite.Sprite):
 
                 if not self.player:
                     if event.key == pygame.K_7:
-                        if pocket_ind[7].stones:
+                        if pocket_ind[12].stones:
                             self.move_stones(screen, 12, pocket_ind)
                             self.change_player()
                     elif event.key == pygame.K_8:
-                        if pocket_ind[8].stones:
+                        if pocket_ind[11].stones:
                             self.move_stones(screen, 11, pocket_ind)
                             self.change_player()
                     elif event.key == pygame.K_9:
-                        if pocket_ind[9].stones:
+                        if pocket_ind[10].stones:
                             self.move_stones(screen, 10, pocket_ind)
                             self.change_player()
                     elif event.key == pygame.K_0:
-                        if pocket_ind[10].stones:
+                        if pocket_ind[9].stones:
                             self.move_stones(screen, 9, pocket_ind)
                             self.change_player()
                     elif event.key == pygame.K_MINUS:
-                        if pocket_ind[11].stones:
+                        if pocket_ind[8].stones:
                             self.move_stones(screen, 8, pocket_ind)
                             self.change_player()
                     elif event.key == pygame.K_EQUALS:
-                        if pocket_ind[12].stones:
+                        if pocket_ind[7].stones:
                             self.move_stones(screen, 7, pocket_ind)
                             self.change_player()
+
+                if event.key == pygame.K_ESCAPE:
+                    return False
         return True
 
     def move_stones(self, screen, index, pockets):
