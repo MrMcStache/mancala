@@ -14,12 +14,15 @@ class Controller(pygame.sprite.Sprite):
         self.font = pygame.font.SysFont(None, 100)
         self.player = 1
         self.game_over = False
+        self.restart = False
 
-    def initialize_board(self, screen, pockets):
+    def initialize_board(self, screen, pockets, stones):
         board = Board()
 
         px = BOARD_X + 170
         py = BOARD_Y + 210
+
+        pocket_ind = []
 
         for p in range(0, 14):
             if p >= 6:
@@ -30,8 +33,6 @@ class Controller(pygame.sprite.Sprite):
                     pocket = Pocket(px - (160 * (p - 6)), py - 200, p)
             else:
                 pocket = Pocket(px + (160 * p), py, p)
-
-        pocket_ind = []
 
         for pocket in pockets:
             if not pocket.is_home:
@@ -232,6 +233,10 @@ class Controller(pygame.sprite.Sprite):
                         if pocket_ind[7].stones:
                             self.move_stones(screen, 7, pocket_ind)
                             self.change_player()
+
+                if event.key == pygame.K_r:
+                    if self.game_over:
+                        self.restart = True
 
                 if event.key == pygame.K_ESCAPE:
                     return False

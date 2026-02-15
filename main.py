@@ -20,7 +20,7 @@ def main():
     dt = 0
 
     controller = Controller()
-    pocket_ind = controller.initialize_board(screen, pockets)
+    pocket_ind = controller.initialize_board(screen, pockets, stones)
     game = True
 
     while game:
@@ -33,6 +33,14 @@ def main():
             drawing.draw(screen)
 
         controller.draw(screen, pocket_ind)
+
+        if controller.game_over and controller.restart:
+            controller.game_over = False
+            controller.restart = False
+            controller.player = 1
+            pygame.sprite.Group.empty(pockets)
+            pygame.sprite.Group.empty(stones)
+            pocket_ind = controller.initialize_board(screen, pockets, stones)
 
         pygame.display.flip()
 
