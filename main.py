@@ -2,6 +2,7 @@ import pygame
 import os
 from constants import *
 from controller import *
+from cpu import *
 
 def main():
     pygame.init()
@@ -20,14 +21,17 @@ def main():
     dt = 0
 
     controller = Controller()
+    cpu = CPU()
     pocket_ind = controller.initialize_board(screen, pockets, stones)
-    game = True
 
-    while game:
+    while True:
         screen.fill(BG_C)
 
         if not controller.update(screen, pocket_ind):
-            game = False
+            return False
+
+        if controller.cpu_player:
+            cpu.update(controller, screen, pocket_ind)
 
         for drawing in drawable:
             drawing.draw(screen)
@@ -39,6 +43,7 @@ def main():
             controller.restart = False
             controller.new_game = True
             controller.player = 1
+            controller.cpu_player = False
             pygame.sprite.Group.empty(pockets)
             pygame.sprite.Group.empty(stones)
             pocket_ind = controller.initialize_board(screen, pockets, stones)

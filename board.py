@@ -28,7 +28,7 @@ class Pocket(pygame.sprite.Sprite):
         self.y = y
         self.p_index = index
         self.is_home = is_home
-        #self.must_play = False
+        self.must_play = False
 
         if self.is_home:
             self.size = (POCKET_WIDTH, HOME_HEIGHT)

@@ -5,13 +5,8 @@ from constants import *
 from board import *
 from stone import *
 
-class Controller(pygame.sprite.Sprite):
+class Controller():
     def __init__(self):
-        if hasattr(self, "containers"):
-            super().__init__(self.containers)
-        else:
-            super().__init__()
-
         self.font = pygame.font.Font(None, 100)
         self.title_font = pygame.font.Font(None, 120)
         self.player = 1
@@ -126,7 +121,9 @@ class Controller(pygame.sprite.Sprite):
             dist = 14 - pocket.p_index
 
             if n >= dist:
-                #pocket.must_play = True
+                if pocket.p_index in range(7, 13):
+                    pocket.must_play = True
+
                 return False
 
         for pocket in pockets[i:j]:
