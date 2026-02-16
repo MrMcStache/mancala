@@ -37,6 +37,7 @@ def main():
         if controller.game_over and controller.restart:
             controller.game_over = False
             controller.restart = False
+            controller.new_game = True
             controller.player = 1
             pygame.sprite.Group.empty(pockets)
             pygame.sprite.Group.empty(stones)

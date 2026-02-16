@@ -1,6 +1,5 @@
 import pygame
 import os
-import random
 from constants import *
 
 class Stone(pygame.sprite.Sprite):

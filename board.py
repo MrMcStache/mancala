@@ -1,6 +1,5 @@
 import pygame
 import os
-import random
 from constants import *
 
 class Board(pygame.sprite.Sprite):
